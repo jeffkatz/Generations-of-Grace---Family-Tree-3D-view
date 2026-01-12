@@ -1,0 +1,290 @@
+
+<div class="flex flex-col h-screen w-screen bg-[#050508] overflow-hidden font-sans text-slate-300">
+  <!-- Cinematic Header -->
+  <header class="absolute top-0 left-0 right-0 p-6 flex items-start justify-between z-30 pointer-events-none">
+    <div class="flex items-center space-x-4 pointer-events-auto">
+      <div class="bg-indigo-600 p-2.5 rounded-2xl shadow-lg shadow-indigo-500/20">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-2xl font-black text-white tracking-tight leading-none drop-shadow-md">Generations of Grace</h1>
+        <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-[0.2em] mt-1.5 opacity-80 italic">Interactive Ancestral Nexus</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-4 pointer-events-auto">
+      <!-- AI Hub Toggle -->
+      <button 
+        (click)="toggleAiHub()"
+        class="flex items-center space-x-2 px-4 py-2.5 bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-xl hover:bg-indigo-600/20 transition-all group"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        <span class="text-[10px] font-black uppercase tracking-widest">{{ showAiHub() ? 'Close Hub' : 'AI Ancestry' }}</span>
+      </button>
+
+      <!-- Search -->
+      <div class="relative group">
+        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+          <svg class="h-4 w-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </span>
+        <input 
+          type="text" 
+          (input)="onSearch($event)"
+          placeholder="Locate soul..." 
+          class="block w-64 pl-10 pr-4 py-2.5 bg-slate-900/60 backdrop-blur-md border border-white/5 rounded-xl leading-5 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all shadow-xl"
+        >
+      </div>
+    </div>
+  </header>
+
+  <!-- Sliding Topography Drawer -->
+  <div 
+    class="fixed inset-y-0 left-0 z-40 flex items-center transition-transform duration-500 ease-out pointer-events-none"
+    [class.translate-x-0]="isTopographyOpen()"
+    [class.-translate-x-72]="!isTopographyOpen()"
+  >
+    <!-- Drawer Panel -->
+    <aside class="w-72 h-[calc(100vh-80px)] my-auto bg-slate-900/80 backdrop-blur-2xl border-r border-white/10 shadow-2xl p-8 flex flex-col space-y-8 pointer-events-auto rounded-r-[3rem]">
+      <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+        <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] mb-6">Topography Controls</h3>
+        
+        <div class="space-y-8">
+          <!-- Soul Count -->
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-slate-500 font-black uppercase tracking-widest">Nexus Population</span>
+            <span class="bg-indigo-500/20 text-indigo-400 text-[9px] px-3 py-1 rounded-full font-black border border-indigo-500/20">{{ totalMembers() }} SOULS</span>
+          </div>
+
+          <!-- Celestial Spin Toggle -->
+          <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+            <span class="text-[11px] font-bold text-slate-400">Celestial Spin</span>
+            <button 
+              (click)="toggleRotation()"
+              [class.bg-indigo-500]="isRotating()"
+              [class.bg-slate-700]="!isRotating()"
+              class="w-12 h-6 rounded-full relative transition-colors shadow-inner"
+            >
+              <div 
+                [class.translate-x-6]="isRotating()"
+                [class.translate-x-1]="!isRotating()"
+                class="absolute top-1 w-4 h-4 bg-white rounded-full transition-transform shadow-lg"
+              ></div>
+            </button>
+          </div>
+
+          <!-- Spin Velocity Slider -->
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <span class="text-[11px] font-bold text-slate-400">Spin Velocity</span>
+              <span class="text-xs font-black text-indigo-400">{{ spinSpeed() }}x</span>
+            </div>
+            <input 
+              type="range" 
+              min="0.5" 
+              max="15" 
+              step="0.5" 
+              [value]="spinSpeed()"
+              (input)="updateSpinSpeed($event)"
+              class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500 hover:accent-indigo-400 transition-all"
+            >
+            <div class="flex justify-between text-[8px] text-slate-600 font-black uppercase tracking-tighter">
+              <span>Orbit</span>
+              <span>Vortex</span>
+            </div>
+          </div>
+
+          <!-- Lineage Depth Slider -->
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <span class="text-[11px] font-bold text-slate-400">Lineage Depth</span>
+              <span class="text-xs font-black text-indigo-400">{{ maxGeneration() }}G</span>
+            </div>
+            <input 
+              type="range" 
+              min="0" 
+              max="8" 
+              step="1" 
+              [value]="maxGeneration()"
+              (input)="updateMaxGeneration($event)"
+              class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500 hover:accent-indigo-400 transition-all"
+            >
+            <div class="flex justify-between text-[8px] text-slate-600 font-black uppercase tracking-tighter">
+              <span>Primordial</span>
+              <span>Ascended</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="mt-8 pt-8 border-t border-white/10 space-y-5">
+          <h4 class="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-2">Bloodline Legend</h4>
+          <div class="flex items-center space-x-4 group">
+            <div class="w-3.5 h-3.5 rounded bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.5)] rotate-45 group-hover:scale-125 transition-transform"></div>
+            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Ancient Roots</span>
+          </div>
+          <div class="flex items-center space-x-4 group">
+            <div class="w-3.5 h-3.5 rounded-full bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.5)] group-hover:scale-125 transition-transform"></div>
+            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Sekano Line</span>
+          </div>
+          <div class="flex items-center space-x-4 group">
+            <div class="w-3.5 h-3.5 rounded-sm bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] rotate-12 group-hover:scale-125 transition-transform"></div>
+            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Monamodi Line</span>
+          </div>
+          <div class="flex items-center space-x-4 group">
+            <div class="w-3.5 h-3.5 bg-fuchsia-500 shadow-[0_0_12px_rgba(232,121,249,0.5)] animate-pulse group-hover:scale-125 transition-transform"></div>
+            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Divine Bridges</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Toggle Handle -->
+    <button 
+      (click)="toggleTopography()"
+      class="h-24 w-10 bg-indigo-600 hover:bg-indigo-500 text-white rounded-r-2xl border-y border-r border-white/20 shadow-2xl flex items-center justify-center transition-all group pointer-events-auto"
+      [class.translate-x-0]="isTopographyOpen()"
+    >
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        class="h-6 w-6 transition-transform duration-500 ease-in-out" 
+        [class.rotate-180]="isTopographyOpen()"
+        fill="none" viewBox="0 0 24 24" stroke="currentColor"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- AI Hub Panel -->
+  @if (showAiHub()) {
+    <app-ai-hub class="animate-in slide-in-from-right-10 duration-500 ease-out"></app-ai-hub>
+  }
+
+  <!-- Person Detail Modal -->
+  @if (selectedPerson()) {
+    <div class="absolute top-0 right-0 h-full w-[400px] bg-slate-900/95 backdrop-blur-3xl border-l border-white/10 z-40 shadow-2xl flex flex-col animate-in slide-in-from-right-20 duration-500">
+      <div class="p-10 flex-1 overflow-y-auto custom-scrollbar">
+        <div class="flex justify-between items-start mb-10">
+          <div class="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <button (click)="closeDetails()" class="p-2 hover:bg-white/10 rounded-full transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <h2 class="text-3xl font-black text-white mb-3 tracking-tight">{{ selectedPerson().name }}</h2>
+        <div class="flex flex-wrap gap-2 mb-8">
+          <span class="text-[10px] uppercase font-black tracking-widest text-indigo-400 bg-indigo-500/20 px-3 py-1 rounded-full border border-indigo-500/20">
+            {{ selectedPerson().type?.replace('_', ' ') || 'Direct Soul' }}
+          </span>
+          @if (selectedPerson().born) {
+            <span class="text-[10px] font-black uppercase text-slate-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">Born {{ selectedPerson().born }}</span>
+          }
+        </div>
+
+        @if (selectedPerson().spouse) {
+          <div class="mb-8 p-6 bg-white/5 rounded-3xl border border-white/5 hover:bg-white/10 transition-colors">
+            <p class="text-[10px] font-black uppercase text-indigo-500 tracking-widest mb-2">Divine Union</p>
+            <p class="text-sm text-slate-200 font-bold italic">Joined with {{ selectedPerson().spouse }}</p>
+          </div>
+        }
+
+        @if (selectedPerson().notes) {
+          <div class="mb-10">
+            <p class="text-[10px] font-black uppercase text-slate-600 tracking-widest mb-3">Ancestral Insight</p>
+            <p class="text-sm text-slate-400 leading-relaxed italic border-l-4 border-indigo-500/40 pl-6 py-1">
+              "{{ selectedPerson().notes }}"
+            </p>
+          </div>
+        }
+
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <p class="text-[10px] font-black uppercase text-slate-600 tracking-widest">Descendants</p>
+            <span class="text-[9px] font-black text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded">{{ descendants().length }} REGISTERED</span>
+          </div>
+          
+          <div class="space-y-3">
+            @for (desc of descendants(); track desc.name) {
+              <div class="p-4 bg-white/5 hover:bg-indigo-600/10 rounded-2xl border border-white/5 transition-all cursor-pointer group hover:translate-x-1">
+                <p class="text-xs font-black text-slate-300 group-hover:text-white transition-colors">{{ desc.name }}</p>
+                <p class="text-[9px] text-slate-600 mt-1 uppercase font-bold tracking-tighter">{{ desc.type?.replace('_', ' ') || 'Lineage Member' }}</p>
+              </div>
+            } @empty {
+              <p class="text-xs text-slate-700 italic text-center py-10">The lineage branches further into the unknown.</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- 3D Scene Area -->
+  <main class="flex-1 relative z-10 overflow-hidden">
+    <div class="absolute bottom-32 right-12 flex items-center space-x-4 z-30 pointer-events-auto">
+      <button (click)="resetZoom()" class="group flex items-center space-x-3 px-6 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl shadow-2xl transition-all active:scale-95 border border-indigo-400/30">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+        <span class="text-[10px] font-black uppercase tracking-[0.2em]">Recenter Nexus</span>
+      </button>
+    </div>
+
+    <app-family-tree 
+      #treeComponent
+      [data]="familyData" 
+      [search]="searchTerm()"
+      [maxGen]="maxGeneration()"
+      [autoRotate]="isRotating()"
+      [spinSpeed]="spinSpeed()"
+      (nodeSelected)="onNodeSelected($event)"
+      class="w-full h-full block"
+    ></app-family-tree>
+  </main>
+
+  <!-- Flight Manual Instruction HUD -->
+  <footer class="absolute bottom-0 left-0 right-0 p-8 flex justify-center items-center z-30 pointer-events-none">
+    <div class="pointer-events-auto bg-slate-900/80 backdrop-blur-3xl px-12 py-6 rounded-[2.5rem] border border-white/10 shadow-2xl flex items-center space-x-16">
+      <div class="flex items-center space-x-4">
+        <div class="flex flex-col items-center space-y-1">
+           <div class="px-2.5 py-1 bg-white/10 rounded-md border border-white/20 text-[10px] font-black uppercase tracking-tighter shadow-sm text-white">Arrows</div>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[9px] font-black text-indigo-400 uppercase tracking-widest mb-0.5">Navigation</span>
+          <span class="text-[8px] text-slate-500 uppercase font-bold tracking-tight">Standard Pan</span>
+        </div>
+      </div>
+      <div class="h-10 w-[1px] bg-white/10"></div>
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-1.5">
+           <div class="px-2 py-1 bg-fuchsia-600/20 rounded-md border border-fuchsia-500/40 text-[10px] font-black uppercase tracking-tighter text-fuchsia-400 shadow-sm">Shift</div>
+           <span class="text-slate-600 text-[10px] font-black">+</span>
+           <div class="px-2 py-1 bg-white/5 rounded-md border border-white/10 text-[10px] font-black uppercase tracking-tighter text-slate-300">Arrows</div>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[9px] font-black text-fuchsia-400 uppercase tracking-widest mb-0.5">Rotation</span>
+          <span class="text-[8px] text-slate-500 uppercase font-bold tracking-tight">Manual Roll</span>
+        </div>
+      </div>
+      <div class="h-10 w-[1px] bg-white/10"></div>
+      <div class="flex items-center space-x-4">
+        <div class="px-3 py-1 bg-slate-800 rounded-md border border-slate-700 text-[10px] font-black text-slate-400 uppercase tracking-tighter shadow-sm">Space</div>
+        <div class="flex flex-col">
+          <span class="text-[9px] font-black text-slate-200 uppercase tracking-widest mb-0.5">Reset</span>
+          <span class="text-[8px] text-slate-500 uppercase font-bold tracking-tight">Zero State</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

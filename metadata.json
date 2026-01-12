@@ -1,0 +1,8 @@
+{
+  "name": "Generations of Grace - Family Tree 3D view",
+  "description": "An interactive, animated family tree visualization featuring the Sekano and Monamodi lineages with zoom, pan, and search capabilities.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
